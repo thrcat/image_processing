@@ -1,8 +1,5 @@
 import cv2
 import numpy as np
-import matplotlib.pyplot as plt
-import math
-from skimage.metrics import structural_similarity as sk_cpt_ssim
 
 #暗通道
 def min_channel(img):
@@ -59,7 +56,7 @@ def guided_filter(I,p,win_size,eps):
 
 
 #main
-I = cv2.imread(r'C:\Users\86139\Desktop\foggy city.jpg')/255.0
+I = cv2.imread(r'C:\Users\86139\Desktop\image_processing\foggy_city.jpg')/255.0
 dark_channel = min_channel(I)
 dark_channel_1 = min_filter(dark_channel,r=7)
 
@@ -67,7 +64,7 @@ A = get_A(I,dark_channel_1,bins_l=2000)
 
 t = get_t(I,A)
 t = guided_filter(dark_channel,t,81,0.001)
-t = t[:,:,np.newaxis].repeat(3,axis=2)#升维至(r,w,3)
+t = t[:,:,np.newaxis].repeat(3,axis=2)
 
 J = (I-A)/t +A
 
@@ -75,4 +72,4 @@ J = np.clip(J,0,1)
 J = J*255
 J =np.uint8(J)
 
-cv2.imwrite(r"C:\Users\86139\Desktop\foggy city result.jpg",J)
+cv2.imwrite(r"C:\Users\86139\Desktop\image_processing\foggy_city_result.jpg",J)
