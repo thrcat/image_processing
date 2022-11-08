@@ -1,0 +1,49 @@
+import cv2
+import math
+import numpy as np
+#平移
+def move(image):
+    height, width, channels = image.shape
+    emptyImage1 = image.copy()
+    x=20
+    y=20
+    for i in range(height):
+        for j in range(width):
+            if i>=x and j>=y:
+                emptyImage1[i,j]=image[i-x][j-y]
+            else:
+                emptyImage1[i,j]=(0,0,0)
+    return emptyImage1
+#旋转
+def spin(image, angle):
+    h, w, channels = image.shape
+    anglePi = angle * math.pi / 180.0
+    cosA = math.cos(anglePi)
+    sinA = math.sin(anglePi)
+    X1 = math.ceil(abs(0.5 * h * cosA + 0.5 * w * sinA))
+    X2 = math.ceil(abs(0.5 * h * cosA - 0.5 * w * sinA))
+    Y1 = math.ceil(abs(-0.5 * h * sinA + 0.5 * w * cosA))
+    Y2 = math.ceil(abs(-0.5 * h * sinA - 0.5 * w * cosA))
+    hh = int(2 * max(Y1, Y2))
+    ww = int(2 * max(X1, X2))
+    emptyImage2 = np.zeros((hh, ww, channels), np.uint8)
+    for i in range(hh):
+        for j in range(ww):
+            x = cosA * i + sinA * j - 0.5 * ww * cosA - 0.5 * hh * sinA + 0.5 * w
+            y = cosA * j- sinA * i+ 0.5 * ww * sinA - 0.5 * hh * cosA + 0.5 * h
+            x = int(x)
+            y = int(y)
+            if x > -1 and x < h and y > -1 and y < w :
+                emptyImage2[i, j] = image[x, y]
+    return emptyImage2
+ 
+image = cv2.imread(r"C:\Users\86139\Desktop\image_processing\lena.jpg")
+spini = spin(image, 30)
+movei=move(image)
+flipi = cv2.flip(image,1)
+
+cv2.imshow('image', image)#原图
+cv2.imshow('spin', spini)#旋转
+cv2.imshow("move",movei)#平移
+cv2.imshow("flip",flipi)
+cv2.waitKey(0)
