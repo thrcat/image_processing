@@ -1,0 +1,35 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+image = cv2.imread(r'C:\Users\86139\Desktop\image_processing\lena.jpg')
+gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+fft = np.fft.fft2(gray)
+shift = np.fft.fftshift(fft)
+
+#幅度、相位
+lo = np.log(np.abs(shift))
+ang = np.angle(shift)
+plt.subplot(131);plt.imshow(gray, "gray")
+plt.subplot(132);plt.imshow(lo, "gray")
+plt.subplot(133);plt.imshow(ang, "gray")
+plt.show()
+
+#恢复
+antifft = np.real(np.fft.ifft2(np.abs(fft)*np.exp(1j*(np.angle(fft)))))
+plt.subplot(121);plt.imshow(gray, "gray")
+plt.subplot(122);plt.imshow(antifft, "gray")
+plt.show()
+
+#幅度1
+antifft = np.real(np.fft.ifft2(np.exp(1j*np.angle(fft))))
+plt.subplot(121);plt.imshow(gray, "gray")
+plt.subplot(122);plt.imshow(antifft, "gray")
+plt.show()
+
+#相位0
+antifft = np.real(np.fft.ifft2(np.abs(fft)))
+plt.subplot(121);plt.imshow(gray, "gray")
+plt.subplot(122);plt.imshow(antifft, "gray")
+plt.show()
