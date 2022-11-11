@@ -13,7 +13,7 @@ def wiener(img,PSF,eps,K=0.05):
     result=np.abs(fft.fftshift(result))
     return result
 
-# 仿真运动模糊
+#仿真运动模糊
 def motion_process(img_s,mot_ang):
     PSF = np.zeros(img_s)
     print(img_s)
@@ -26,22 +26,22 @@ def motion_process(img_s,mot_ang):
         for i in range(15):
             offset=round(i*slope_tan) #((center_position-i)*slope_tan)
             PSF[int(center_position+offset),int(center_position-offset)]=1
-        return PSF / PSF.sum() #对点扩散函数进行归一化亮度
+        return PSF / PSF.sum() 
     else:
         for i in range(15):
             offset=round(i*slope_cot)
             PSF[int(center_position-offset),int(center_position+offset)]=1
         return PSF / PSF.sum()
   
-#对图片进行运动模糊
 def make_blurred(input, PSF, eps):
-    input_fft = fft.fft2(input)# 进行二维数组的傅里叶变换
+    input_fft = fft.fft2(input)
     PSF_fft = fft.fft2(PSF)+ eps
     blurred = fft.ifft2(input_fft * PSF_fft)
     blurred = np.abs(fft.fftshift(blurred))
     return blurred
   
-#main
+  
+##main
 image = cv2.imread(r'C:\Users\86139\Desktop\image_processing\lena.jpg')
 image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 img_h=image.shape[0]
@@ -49,31 +49,36 @@ img_w=image.shape[1]
 plt.figure(1)
 plt.title("Original Image")
 plt.gray()
-plt.imshow(image)  #显示原图像
+plt.imshow(image) 
   
 plt.figure(2)
 plt.gray()
-#进行运动模糊处理
+
+#运动模糊处理
 PSF = motion_process((img_h,img_w), 60)
 blurred = np.abs(make_blurred(image, PSF, 1e-1))
   
 plt.subplot(221)
 plt.title("Motion blurred")
 plt.imshow(blurred)
-  
-wie=wiener(blurred,PSF,1e-3)  #维纳滤波
+
+#维纳滤波
+wie=wiener(blurred,PSF,1e-3)  
 plt.subplot(223)
 plt.title("wiener deblurred(k=0.05)")
 plt.imshow(wie)
-  
+
+#加噪声
 bln=blurred + 0.1 * blurred.std() 
-np.random.standard_normal(blurred.shape) #添加噪声,standard_normal产生随机的函数
-  
+np.random.standard_normal(blurred.shape) 
+
+#显示添加噪声且运动模糊的图像
 plt.subplot(222)
 plt.title("motion & noisy blurred")
-plt.imshow(bln)  #显示添加噪声且运动模糊的图像
-  
-bln=wiener(bln,PSF,0.1+1e-1)   #对添加噪声的图像进行维纳滤波
+plt.imshow(bln)  
+
+#对添加噪声的图像进行维纳滤波
+bln=wiener(bln,PSF,0.1+1e-1)   
 plt.subplot(224)
 plt.title("wiener deblurred(k=0.05)")
 plt.imshow(bln)
