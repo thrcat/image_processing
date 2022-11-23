@@ -1,0 +1,57 @@
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+
+####大津法####
+
+img = cv2.imread(r'C:\Users\86139\Desktop\image_processing\lena.jpg')
+h = img.shape[0]
+w = img.shape[1]
+N = h*w
+threshold = 0
+max_g = 0
+
+for i in range(256):
+    n0 = img[np.where(img < i)]
+    n1 = img[np.where(img >= i)]
+    w0 = len(n0) / N
+    w1 = len(n1) / N
+    u0 = np.mean(n0) if len(n0) > 0 else 0.
+    u1 = np.mean(n1) if len(n1) > 0 else 0.
+    
+    g = w0 * w1 * (u0 - u1) ** 2
+    if g > max_g:
+        max_g = g
+        threshold = i
+
+img[img < threshold] = 0
+img[img >= threshold] = 255
+plt.imshow(img)
+
+####迭代法####
+
+img = cv2.imread(r'C:\Users\86139\Desktop\image_processing\lena.jpg')
+t0 = int((np.min(img)+np.max(img))/2)
+t1 = 0
+
+while abs(t0 - t1)>0:
+    res1 = 0
+    res2 = 0
+    s1 = 0
+    s2 = 0
+    for i in range(0, h-1):
+        for j in range(0, w-1):
+            if img[i, j] < t0:
+                res1 = res1 + img[i, j]
+                s1 = s1 + 1
+            elif img[i, j] >= t0:
+                res2 = res2 + img[i, j]
+                s2 = s2 + 1
+    avg1 = res1 / s1
+    avg2 = res2 / s2
+    t1 = t0
+    t0 = int((avg1 + avg2)/2)
+
+img[img < t0] = 0
+img[img >= t0] = 255
+plt.imshow(img)
