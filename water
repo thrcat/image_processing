@@ -24,7 +24,6 @@ def water(inputimg, size):
     h = size[0]
     pixarray = np.zeros([imsize,2])
     labelout = np.zeros(size)-1
-    #distance = np.zeros(size)
     putquemask = np.zeros(size)
     labelsize = np.zeros(imsize)
     cnt = np.zeros(257)
@@ -64,7 +63,7 @@ def water(inputimg, size):
                     continue
                 if labelout[neighboraxis[0],neighboraxis[1]] >= 0:
                     putquemask[neighboraxis[0],neighboraxis[1]] > 0
-                    que.put(nowpixaxis)#入队
+                    que.put(nowpixaxis)
                     break
 
         while 1:
